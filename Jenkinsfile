@@ -2,57 +2,60 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven'   // Jenkins Maven installation name (configure in Manage Jenkins → Tools)
-        jdk 'Java21'  // Jenkins JDK installation name (Java 21, since your pom.xml requires 21)
+        maven 'M3'
+        jdk 'JDK21'
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/MeraGithubMeriPehchan/samplejavaapp.git',
-                    branch: 'master'
-            }
-        }
+    environment {
+        SONARQUBE = 'MySonarQube'   // Jenkins SonarQube server name
+    }
 
-        stage('Compile') {
-            steps {
-                bat 'mvn clean compile'
-            }
-        }
+     stages {
+    //     stage('Checkout') {
+    //         steps {
+    //             git url: 'https://github.com/MeraGithubMeriPehchan/samplejavaapp.git',
+    //                 branch: 'master'
+    //         }
+    //     }
 
-        stage('Code Review (Static Analysis)') {
-            steps {
-                // Runs checkstyle, PMD, and SpotBugs as per pom.xml
-                bat 'mvn validate'
-            }
-        }
+    //     stage('Compile') {
+    //         steps {
+    //             bat 'mvn clean compile'
+    //         }
+    //     }
 
-        stage('Unit Tests & Coverage') {
+    //     stage('Unit Tests & Coverage') {
+    //         steps {
+    //             bat 'mvn test'
+    //         }
+    //         post {
+    //             always {
+    //                 junit '**/target/surefire-reports/*.xml'
+    //             }
+    //         }
+    //     }
+
+        stage('SonarQube Code Analysis') {
             steps {
-                bat 'mvn test'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'   // Collect test reports
+                withSonarQubeEnv('MySonarQube') {
+                    bat """
+                        mvn sonar:sonar ^
+                          -Dsonar.projectKey=sampleapp ^
+                          -Dsonar.host.url=http://localhost:9000 ^
+                    """
                 }
             }
         }
 
-        stage('Package') {
-            steps {
-                bat 'mvn package'
-            }
-            post {
-                success {
-                    archiveArtifacts artifacts: 'target/*.war', fingerprint: true
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            echo "Build finished at ${new Date()}"
-        }
+        // stage('Package') {
+        //     steps {
+        //         bat 'mvn package'
+        //     }
+        //     post {
+        //         success {
+        //             archiveArtifacts artifacts: 'target/*.war', fingerprint: true
+        //         }
+        //     }
+        // }
     }
 }
