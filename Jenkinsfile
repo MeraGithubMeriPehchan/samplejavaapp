@@ -20,6 +20,13 @@ pipeline {
             }
         }
 
+        stage('Code Review (Static Analysis)') {
+            steps {
+                // Runs checkstyle, PMD, and SpotBugs as per pom.xml
+                bat 'mvn validate'
+            }
+        }
+
         stage('Unit Tests & Coverage') {
             steps {
                 bat 'mvn test'
