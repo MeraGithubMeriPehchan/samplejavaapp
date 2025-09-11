@@ -2,15 +2,15 @@ pipeline {
     agent any
 
     tools {
-        maven 'M3'
-        jdk 'JDK21'
+        maven 'Maven'
+        jdk 'Java21'
     }
 
     environment {
         SONARQUBE = 'MySonarQube'   // Jenkins SonarQube server name
     }
 
-     stages {
+    // stages {
     //     stage('Checkout') {
     //         steps {
     //             git url: 'https://github.com/MeraGithubMeriPehchan/samplejavaapp.git',
