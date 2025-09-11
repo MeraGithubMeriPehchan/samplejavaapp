@@ -38,14 +38,18 @@ pipeline {
         stage('SonarQube Code Analysis') {
             steps {
                 withSonarQubeEnv('MySonarQube') {
-                    bat """
-                        mvn sonar:sonar ^
-                          -Dsonar.projectKey=sampleapp ^
-                          -Dsonar.host.url=http://localhost:9000 ^
-                    """
+                    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                        bat """
+                            mvn sonar:sonar ^
+                            -Dsonar.projectKey=sampleapp ^
+                            -Dsonar.host.url=http://localhost:9000 ^
+                            -Dsonar.token=%SONAR_TOKEN%
+                        """
+                    }
                 }
             }
-        }
+        }       
+
 
         // stage('Package') {
         //     steps {
