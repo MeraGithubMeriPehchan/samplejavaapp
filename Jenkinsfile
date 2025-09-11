@@ -22,7 +22,7 @@ pipeline {
 
         stage('Unit Tests & Coverage') {
             steps {
-                bat 'mvn test jacoco:report'
+                bat 'mvn test'
             }
             post {
                 always {
